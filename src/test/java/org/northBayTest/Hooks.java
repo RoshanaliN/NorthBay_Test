@@ -34,7 +34,6 @@ public class Hooks {
       driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(20));
       driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
     }
-    initializeReport();
     try (Reader reader = new FileReader("src/test/resources/test-data.json")) {
       dataList = new Gson().fromJson(reader, new TypeToken<List<TestData>>() {
       }.getType());
@@ -89,7 +88,6 @@ public class Hooks {
       driver.quit();
       driver = null;
     }
-    finalizeReport();
   }
 
   public static WebDriver getDriver() {

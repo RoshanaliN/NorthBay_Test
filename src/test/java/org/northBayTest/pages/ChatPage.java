@@ -37,6 +37,9 @@ public class ChatPage extends BasePage {
   @FindBy(xpath = "//p[@data-placeholder='أرسل رسالة']")
   private WebElement textBoxChatInputArabic;
 
+  @FindBy(xpath = "//html[@lang='ar']")
+  private WebElement arabicWebpage;
+
   public final String Xpath_workingOnIt = "//*[text()='Working on it..']";
   public final String Xpath_classifyingYourQuery = "//*[text()='Classifying your query']";
   public final String Xpath_responseCopyButton = "//div[div[contains(@class,'chat-assistant')]]//button[(@aria-label='Copy' or @aria-label='نسخ')][last()]";
@@ -76,6 +79,9 @@ public class ChatPage extends BasePage {
     buttonBottomMenu.click();
     toggleSwitchToArabic.click();
     buttonBottomMenu.click();
+    wait.until(ExpectedConditions.visibilityOfElementLocated(
+        By.xpath("//html[@lang='ar']")));
+    arabicWebpage.isDisplayed();
     textBoxChatInputArabic.isDisplayed();
   }
 }

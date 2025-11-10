@@ -17,6 +17,10 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
+//miniLLM sentenceTransformer - use library
+// Report status is pass fail
+// add logs
+
 public class ResponseEvaluation {
 
   public static Map<String, Object> evaluateResponse(String expected, String response) {
