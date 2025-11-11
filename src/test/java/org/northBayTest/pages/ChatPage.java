@@ -8,8 +8,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ChatPage extends BasePage {
+
+  private static final Logger logger = LoggerFactory.getLogger(ChatPage.class);
 
   private WebDriver driver;
 
@@ -34,16 +38,14 @@ public class ChatPage extends BasePage {
   @FindBy(xpath = "//div[string() = 'Switch to Arabic']/parent::div//div[contains(@class,'toggle')]")
   private WebElement toggleSwitchToArabic;
 
-  @FindBy(xpath = "//p[@data-placeholder='أرسل رسالة']")
-  private WebElement textBoxChatInputArabic;
-
   @FindBy(xpath = "//html[@lang='ar']")
   private WebElement arabicWebpage;
 
   public final String Xpath_workingOnIt = "//*[text()='Working on it..']";
   public final String Xpath_classifyingYourQuery = "//*[text()='Classifying your query']";
-  public final String Xpath_responseCopyButton = "//div[div[contains(@class,'chat-assistant')]]//button[(@aria-label='Copy' or @aria-label='نسخ')][last()]";
-  public final String Xpath_responseFirstCopyButton = "//div[div[contains(@class,'chat-assistant')]]//button[@aria-label='Copy']";
+  public final String Xpath_finalizingTheAnswer = "//*[text()='Finalizing the answer']";
+  public final String Xpath_responseCopyButton = "//div[div[contains(@class,'chat-assistant')]]//button[contains(@class,'copy')][last()]";
+  public final String Xpath_responseFirstCopyButton = "//div[div[contains(@class,'chat-assistant')]]//button[contains(@class,'copy')]";
 
 
   public ChatPage() {
@@ -67,6 +69,8 @@ public class ChatPage extends BasePage {
     wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(Xpath_workingOnIt)));
     wait.until(
         ExpectedConditions.invisibilityOfElementLocated(By.xpath(Xpath_classifyingYourQuery)));
+    wait.until(
+        ExpectedConditions.invisibilityOfElementLocated(By.xpath(Xpath_finalizingTheAnswer)));
     wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(Xpath_responseCopyButton)));
     return textResponse.get(textResponse.size() - 1).getText().replace("\n", "");
   }
@@ -76,12 +80,25 @@ public class ChatPage extends BasePage {
   }
 
   public void switchLanguage() {
+    logger.info("Switching chat language to Arabic.");
     buttonBottomMenu.click();
     toggleSwitchToArabic.click();
+    wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//html[@lang='ar']")));
+    boolean arabicPageDisplayed = arabicWebpage.isDisplayed();
+    try {
+      int counter = 0;
+      String fieldText;
+      do {
+        Thread.sleep(500);
+        fieldText = driver.findElement(By.xpath("//div[contains(@class,'text-error-icon')]"))
+            .getText();
+        counter++;
+      } while (fieldText.equals("تسجيل الخروج") && counter < 5);
+    } catch (Exception exception) {
+      logger.error("Error changing language", exception);
+    }
     buttonBottomMenu.click();
-    wait.until(ExpectedConditions.visibilityOfElementLocated(
-        By.xpath("//html[@lang='ar']")));
-    arabicWebpage.isDisplayed();
-    textBoxChatInputArabic.isDisplayed();
+    wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//div[@role='menu']")));
+    logger.info("Arabic webpage displayed: {}", arabicPageDisplayed);
   }
 }
